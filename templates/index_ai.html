@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Text-to-Image Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .model-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .model-option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .model-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .model-option h3 {
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .model-option p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .generated-image {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+        }
+
+        .image-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .example-prompts {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .example-prompts h3 {
+            margin-bottom: 15px;
+            color: #1976d2;
+        }
+
+        .prompt-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .prompt-example {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e3f2fd;
+        }
+
+        .prompt-example:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #28a745;
+        }
+
+        .status-offline {
+            background: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .model-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🤖</span>
+                AI Text-to-Image Generator
+            </h1>
+            <p>Transform your ideas into stunning AI-generated images</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2>🎨 Choose Your AI Model</h2>
+                <div class="model-selector">
+                    <div class="model-option selected" data-model="stable_diffusion">
+                        <h3>🎭 Stable Diffusion</h3>
+                        <p>High-quality general purpose</p>
+                    </div>
+                    <div class="model-option" data-model="openjourney">
+                        <h3>🚀 OpenJourney</h3>
+                        <p>Midjourney-style art</p>
+                    </div>
+                    <div class="model-option" data-model="dreamlike">
+                        <h3>📸 Dreamlike</h3>
+                        <p>Photorealistic images</p>
+                    </div>
+                    <div class="model-option" data-model="realistic">
+                        <h3>🌍 Realistic</h3>
+                        <p>Realistic photography</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="prompt">✨ Describe Your Image:</label>
+                    <textarea id="prompt" placeholder="Enter a detailed description of the image you want to generate...&#10;&#10;Examples:&#10;• A majestic dragon with iridescent scales flying over a mystical forest&#10;• A futuristic cityscape with flying cars and neon lights&#10;• A peaceful sunset over mountains with golden clouds&#10;• A cyberpunk street scene with holographic advertisements"></textarea>
+                </div>
+
+                <button class="generate-btn" onclick="generateImage()">
+                    🎨 Generate AI Image
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>🤖 AI is creating your masterpiece...</p>
+                </div>
+            </div>
+
+            <div class="example-prompts">
+                <h3>💡 Try These Examples:</h3>
+                <div class="prompt-examples">
+                    <div class="prompt-example" onclick="setPrompt('A majestic dragon with iridescent scales, detailed fantasy art')">
+                        A majestic dragon with iridescent scales, detailed fantasy art
+                    </div>
+                    <div class="prompt-example" onclick="setPrompt('Futuristic cityscape with flying cars and neon lights, cyberpunk style')">
+                        Futuristic cityscape with flying cars and neon lights, cyberpunk style
+                    </div>
+                    <div class="prompt-example" onclick="setPrompt('A peaceful forest with sunlight filtering through trees, misty atmosphere')">
+                        A peaceful forest with sunlight filtering through trees, misty atmosphere
+                    </div>
+                    <div class="prompt-example" onclick="setPrompt('Colorful abstract painting with flowing shapes and vibrant colors')">
+                        Colorful abstract painting with flowing shapes and vibrant colors
+                    </div>
+                </div>
+            </div>
+
+            <div id="result" class="result-section" style="display: none;">
+                <h2>🎨 Generated Image</h2>
+                <img id="generated-image" class="generated-image" alt="Generated Image">
+                <div class="image-info">
+                    <p><strong>Prompt:</strong> <span id="prompt-used"></span></p>
+                    <p><strong>Model Used:</strong> <span id="model-used"></span></p>
+                    <p><strong>Status:</strong> <span id="generation-status"></span></p>
+                </div>
+                <a id="download-link" class="download-btn" href="#" download>
+                    📥 Download Image
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedModel = 'stable_diffusion';
+
+        // Model selection
+        document.querySelectorAll('.model-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedModel = this.dataset.model;
+            });
+        });
+
+        // Set prompt from examples
+        function setPrompt(prompt) {
+            document.getElementById('prompt').value = prompt;
+        }
+
+        // Generate image
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value.trim();
+            
+            if (!prompt) {
+                alert('Please enter a description for your image!');
+                return;
+            }
+
+            const generateBtn = document.querySelector('.generate-btn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+
+            // Show loading
+            generateBtn.disabled = true;
+            generateBtn.textContent = '🤖 Generating...';
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        model: selectedModel
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Display result
+                    document.getElementById('generated-image').src = 'data:image/png;base64,' + data.image;
+                    document.getElementById('prompt-used').textContent = data.prompt;
+                    document.getElementById('model-used').textContent = data.model_used;
+                    document.getElementById('generation-status').innerHTML = '<span class="status-indicator status-online"></span>Success';
+                    document.getElementById('download-link').href = '/download/' + data.filename;
+                    
+                    result.style.display = 'block';
+                    
+                    // Show success message
+                    showMessage('✅ ' + data.message, 'success');
+                } else {
+                    showMessage('❌ ' + (data.error || 'Failed to generate image'), 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            } finally {
+                // Hide loading
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🎨 Generate AI Image';
+                loading.style.display = 'none';
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            const container = document.querySelector('.main-content');
+            container.insertBefore(messageDiv, container.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Check health status
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                console.log('Health check:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        }
+
+        // Check health on page load
+        checkHealth();
+    </script>
+</body>
+</html> 
