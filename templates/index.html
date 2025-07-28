@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Image Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .input-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 400px;
+        }
+
+        .output-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .generated-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #c33;
+        }
+
+        .success {
+            background: #efe;
+            color: #363;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #363;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .examples {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
+        .examples h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .example-prompts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .example-prompt {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .example-prompt:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .example-prompt h4 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .example-prompt p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> Text-to-Image Generator</h1>
+            <p>Transform your ideas into stunning visuals using AI</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2><i class="fas fa-edit"></i> Describe Your Image</h2>
+                <form id="generateForm">
+                    <div class="form-group">
+                        <label for="prompt">Image Description:</label>
+                        <textarea 
+                            id="prompt" 
+                            name="prompt" 
+                            placeholder="Describe the image you want to generate... (e.g., 'A serene mountain landscape at sunset with golden clouds')"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <button type="submit" class="generate-btn" id="generateBtn">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Image
+                    </button>
+                </form>
+            </div>
+
+            <div class="output-section">
+                <h2><i class="fas fa-image"></i> Generated Image</h2>
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Generating your image... This may take a minute.</p>
+                </div>
+                <div id="result" class="image-container">
+                    <p>Your generated image will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h2><i class="fas fa-lightbulb"></i> Example Prompts</h2>
+            <div class="example-prompts">
+                <div class="example-prompt" onclick="useExample(this)">
+                    <h4>Nature Scene</h4>
+                    <p>"A peaceful forest with sunlight filtering through trees, misty atmosphere"</p>
+                </div>
+                <div class="example-prompt" onclick="useExample(this)">
+                    <h4>Sci-Fi City</h4>
+                    <p>"Futuristic cityscape with flying cars and neon lights, cyberpunk style"</p>
+                </div>
+                <div class="example-prompt" onclick="useExample(this)">
+                    <h4>Fantasy Portrait</h4>
+                    <p>"A majestic dragon with iridescent scales, detailed fantasy art"</p>
+                </div>
+                <div class="example-prompt" onclick="useExample(this)">
+                    <h4>Abstract Art</h4>
+                    <p>"Colorful abstract painting with flowing shapes and vibrant colors"</p>
+                </div>
+                <div class="example-prompt" onclick="useExample(this)">
+                    <h4>Space Scene</h4>
+                    <p>"Galaxy with stars and nebula, cosmic beauty, space art"</p>
+                </div>
+                <div class="example-prompt" onclick="useExample(this)">
+                    <h4>Vintage Style</h4>
+                    <p>"Retro diner with 1950s aesthetic, warm lighting, nostalgic atmosphere"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('generateForm');
+        const promptInput = document.getElementById('prompt');
+        const generateBtn = document.getElementById('generateBtn');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showError('Please enter a description for the image.');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            loading.style.display = 'block';
+            result.innerHTML = '';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess('Image generated successfully!');
+                    displayImage(data.image, data.filename, data.prompt);
+                } else {
+                    showError(data.error || 'Failed to generate image');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Error:', error);
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Image';
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayImage(imageData, filename, prompt) {
+            result.innerHTML = `
+                <img src="data:image/png;base64,${imageData}" alt="Generated Image" class="generated-image">
+                <div style="margin-top: 15px;">
+                    <p><strong>Prompt:</strong> ${prompt}</p>
+                    <button class="download-btn" onclick="downloadImage('${filename}')">
+                        <i class="fas fa-download"></i> Download Image
+                    </button>
+                </div>
+            `;
+        }
+
+        function downloadImage(filename) {
+            window.open(`/download/${filename}`, '_blank');
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            result.innerHTML = '';
+            result.appendChild(errorDiv);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            result.insertBefore(successDiv, result.firstChild);
+        }
+
+        function useExample(element) {
+            const prompt = element.querySelector('p').textContent;
+            promptInput.value = prompt;
+            promptInput.focus();
+        }
+
+        // Add some interactivity
+        promptInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                generateBtn.style.opacity = '1';
+            } else {
+                generateBtn.style.opacity = '0.6';
+            }
+        });
+    </script>
+</body>
+</html> 
