@@ -1,156 +1,188 @@
-# Text-to-Image Generation Application
+# 🎨 Text-to-Image Generation Application
 
-A modern web application that generates images from text descriptions using AI-powered generative models. Built with Flask, Stable Diffusion, and a beautiful responsive UI.
+A powerful Flask-based web application that generates images from text descriptions using AI models. Features both real AI generation capabilities and beautiful fallback images.
 
-## 🚀 Features
+## ✨ Features
 
-- **AI-Powered Image Generation**: Uses Stable Diffusion model to create high-quality images from text descriptions
-- **Modern Web Interface**: Beautiful, responsive UI with real-time feedback
-- **Example Prompts**: Pre-built examples to help users get started
-- **Image Download**: Save generated images directly to your device
-- **Real-time Generation**: See your image being generated with loading indicators
-- **Mobile Responsive**: Works perfectly on desktop, tablet, and mobile devices
+- **Real AI Generation**: Uses Hugging Face Stable Diffusion models
+- **Beautiful Fallbacks**: Creates stunning abstract art when AI services are unavailable
+- **Real-time Generation**: Instant image creation and display
+- **Download Capability**: Save generated images to your computer
+- **Modern UI**: Beautiful, responsive web interface
+- **Error Handling**: Graceful fallbacks and error recovery
+- **Health Monitoring**: System status checks and monitoring
+
+## 🚀 Live Demo
+
+**Application URL**: http://localhost:5000
 
 ## 🛠️ Technology Stack
 
-- **Backend**: Python Flask
-- **AI Model**: Stable Diffusion v1.5 via Hugging Face Diffusers
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Backend**: Flask (Python)
+- **AI Models**: Hugging Face Stable Diffusion v1.5
 - **Image Processing**: Pillow (PIL)
-- **Deep Learning**: PyTorch, Transformers
+- **Frontend**: HTML, CSS, JavaScript
+- **API Integration**: Hugging Face Inference API
+- **Environment**: Python 3.8+
 
 ## 📋 Prerequisites
 
 - Python 3.8 or higher
-- CUDA-capable GPU (recommended for faster generation)
-- At least 8GB RAM (16GB recommended)
-- 10GB free disk space for model downloads
+- Git
+- Web browser
+- (Optional) Hugging Face account for real AI generation
 
-## 🚀 Installation
+## 🚀 Quick Start
 
-1. **Clone or download the project files**
+### Option 1: Automated Setup (Recommended)
 
-2. **Create a virtual environment (recommended)**:
-   ```bash
-   python -m venv venv
-   
-   # On Windows
-   venv\Scripts\activate
-   
-   # On macOS/Linux
-   source venv/bin/activate
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/nani0012345/Text-to-image.git
+cd Text-to-image
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Run the automated setup
+python setup.py
+```
 
-4. **Run the application**:
-   ```bash
-   python app.py
-   ```
+### Option 2: Manual Setup
 
-5. **Open your browser** and navigate to `http://localhost:5000`
+```bash
+# Clone the repository
+git clone https://github.com/nani0012345/Text-to-image.git
+cd Text-to-image
+
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+
+# Install dependencies
+pip install -r requirements_simple.txt
+
+# Create environment file
+echo HF_TOKEN=your_hugging_face_token_here > .env
+echo FLASK_ENV=development >> .env
+
+# Run the application
+python app_real_ai_final.py
+```
 
 ## 🎯 Usage
 
-1. **Enter a Description**: Type a detailed description of the image you want to generate
-2. **Click Generate**: Press the "Generate Image" button to start the process
-3. **Wait for Generation**: The AI will process your request (usually takes 30-60 seconds)
-4. **Download**: Once generated, you can download the image to your device
+1. **Start the Application**:
+   ```bash
+   python app_real_ai_final.py
+   ```
 
-### Example Prompts
+2. **Open in Browser**:
+   Navigate to http://localhost:5000
 
-- **Nature**: "A peaceful forest with sunlight filtering through trees, misty atmosphere"
-- **Sci-Fi**: "Futuristic cityscape with flying cars and neon lights, cyberpunk style"
-- **Fantasy**: "A majestic dragon with iridescent scales, detailed fantasy art"
-- **Abstract**: "Colorful abstract painting with flowing shapes and vibrant colors"
-- **Space**: "Galaxy with stars and nebula, cosmic beauty, space art"
-- **Vintage**: "Retro diner with 1950s aesthetic, warm lighting, nostalgic atmosphere"
+3. **Generate Images**:
+   - Enter your text description
+   - Click "Generate Image"
+   - View and download your creation!
 
-## ⚙️ Configuration
+## 🔧 Configuration
 
-### Environment Variables
+### Real AI Generation Setup
 
-Create a `.env` file in the project root to customize settings:
+To enable real AI image generation:
 
-```env
-# Model configuration
-MODEL_ID=runwayml/stable-diffusion-v1-5
-NUM_INFERENCE_STEPS=20
-GUIDANCE_SCALE=7.5
+1. **Get Hugging Face Token**:
+   ```bash
+   python setup_real_ai.py
+   ```
 
-# Server configuration
-FLASK_ENV=development
-FLASK_DEBUG=True
-```
+2. **Update Environment**:
+   Edit `.env` file and replace `your_hugging_face_token_here` with your actual token
 
-### Model Options
-
-You can modify the model in `app.py`:
-
-```python
-# For faster generation (lower quality)
-model_id = "CompVis/stable-diffusion-v1-4"
-
-# For higher quality (slower generation)
-model_id = "stabilityai/stable-diffusion-2-1"
-
-# For specific styles
-model_id = "prompthero/openjourney"  # Midjourney style
-```
+3. **Restart Application**:
+   ```bash
+   python app_real_ai_final.py
+   ```
 
 ## 📁 Project Structure
 
 ```
-text-to-image/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── README.md             # This file
+Text-to-image/
+├── app_real_ai_final.py      # Main application (Real AI + Fallbacks)
+├── app_working_final.py      # Beautiful placeholder version
+├── requirements_simple.txt    # Dependencies for simple version
+├── requirements.txt          # Dependencies for full version
+├── setup.py                 # Automated setup script
+├── setup_real_ai.py         # Real AI setup helper
 ├── templates/
-│   └── index.html        # Main web interface
+│   └── index.html           # Web interface
 ├── static/
-│   └── generated_images/ # Generated images storage
-└── .env                  # Environment variables (create this)
+│   └── generated_images/    # Generated images storage
+├── .env                     # Environment variables
+├── .gitignore              # Git ignore rules
+└── README.md               # This file
 ```
 
-## 🔧 Troubleshooting
+## 🎨 Application Modes
+
+### Beautiful Placeholder Mode (Default)
+- Creates stunning abstract art with gradients and shapes
+- No authentication required
+- Always works perfectly
+- Generates unique images for each prompt
+
+### Real AI Mode (With Token)
+- Uses Stable Diffusion v1.5 model
+- Generates real AI images based on your prompts
+- Falls back to beautiful placeholders if AI service is unavailable
+- Best of both worlds!
+
+## 🔍 API Endpoints
+
+- `GET /` - Main web interface
+- `POST /generate` - Generate image from text
+- `GET /download/<filename>` - Download generated image
+- `GET /health` - Health check and status
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+python test_simple.py
+```
+
+## 📊 Status
+
+- ✅ **Health Check**: PASSED
+- ✅ **Image Generation**: PASSED
+- ✅ **Web Interface**: WORKING
+- ✅ **Download Functionality**: WORKING
+- ✅ **Real AI Ready**: CONFIGURABLE
+
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Out of Memory Error**:
-   - Reduce `num_inference_steps` in the code
-   - Use CPU instead of GPU (slower but uses less memory)
-   - Close other applications to free up RAM
+1. **ModuleNotFoundError**: Install missing dependencies
+   ```bash
+   pip install -r requirements_simple.txt
+   ```
 
-2. **Model Download Issues**:
-   - Check your internet connection
-   - Try downloading the model manually from Hugging Face
-   - Clear the Hugging Face cache: `rm -rf ~/.cache/huggingface`
+2. **Port Already in Use**: Change port or kill existing process
+   ```bash
+   # Windows
+   taskkill /f /im python.exe
+   ```
 
-3. **CUDA Issues**:
-   - Install CUDA toolkit if using GPU
-   - Install CPU-only PyTorch: `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu`
+3. **AI Service Unavailable**: Application automatically falls back to beautiful placeholders
 
-4. **Slow Generation**:
-   - Use a GPU if available
-   - Reduce `num_inference_steps` (default: 20)
-   - Use a smaller model variant
-
-### Performance Tips
-
-- **GPU Usage**: The application automatically detects and uses CUDA if available
-- **Memory Management**: Generated images are automatically cleaned up
-- **Caching**: The model is loaded once and reused for all generations
+4. **Authentication Errors**: Set up Hugging Face token using `setup_real_ai.py`
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+4. Submit a pull request
 
 ## 📄 License
 
@@ -158,18 +190,19 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- [Stable Diffusion](https://github.com/CompVis/stable-diffusion) by CompVis
-- [Hugging Face Diffusers](https://github.com/huggingface/diffusers) for the model implementation
-- [Flask](https://flask.palletsprojects.com/) for the web framework
+- Hugging Face for AI models and API
+- Flask community for the web framework
+- Pillow for image processing capabilities
 
 ## 📞 Support
 
-If you encounter any issues or have questions:
-
-1. Check the troubleshooting section above
-2. Search existing issues
-3. Create a new issue with detailed information
+For issues and questions:
+- Create an issue on GitHub
+- Check the troubleshooting section
+- Review the documentation
 
 ---
 
-**Note**: This application requires significant computational resources. For production use, consider using cloud services or dedicated hardware. 
+**🎉 Ready to create amazing images? Start the application and let your imagination run wild!**
+
+**Repository**: [https://github.com/nani0012345/Text-to-image.git](https://github.com/nani0012345/Text-to-image.git) 
